@@ -1,0 +1,32 @@
+name: Github actions
+
+on:
+  push:
+  schedule:
+    - cron: '0 2 * * 1,4'
+
+jobs:
+  Build:
+
+    name: build
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        image_tag: [old, stable, trunk]
+        build_type: [Debug, Release]
+
+    container: chinoune/debian-gfortran-testing:${{ matrix.image_tag }}
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Configuring
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+    - name: Building
+      run: make -C build -j$(nproc)
+    - name: Running
+      run: build/main
