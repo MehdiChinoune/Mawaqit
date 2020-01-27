@@ -3,7 +3,7 @@ module time_date
   implicit none
   ! date type
   type dat
-    integer :: years, months, days
+    integer :: days, months, years
   end type dat
   ! time type
   type time
