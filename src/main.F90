@@ -23,26 +23,21 @@ program main
   close( in_unit )
   !
   open( newunit = ou_unit, file = "output.dat", status = "replace", action = "write" )
+  print*, "day       : fajr     sunrise  dhuhur   asr      maghrib  ishaa"
+  write( ou_unit, '(A61)' ) "Day        Fajr     Sunrise  Dhuhur   Asr      Maghrib  Ishaa"
   !
   do i = 1, month_days(month)
     if( month==2 .and. mod(year,4)/=0 .and. i==29 ) cycle
     day = dat(year,month,i)
     call init(time_zone, longitude, day)
     call prayer_times(latitude,waqt)
-    print*, day
-    print'("fajr   :",2(i2,":"),i2,1x)',to_hms(waqt%fajr)
-    print'("sunrise:",2(i2,":"),i2,1x)',to_hms(waqt%sunrise)
-    print'("dhuhur :",2(i2,":"),i2,1x)',to_hms(waqt%dhuhur)
-    print'("asr    :",2(i2,":"),i2,1x)',to_hms(waqt%asr)
-    print'("maghrib:",2(i2,":"),i2,1x)',to_hms(waqt%maghrib)
-    print'("ishaa  :",2(i2,":"),i2,1x)',to_hms(waqt%ishaa)
-    write( ou_unit, *) day
-    write( ou_unit, '("fajr   :",2(i2,":"),i2,1x)' ) to_hms(waqt%fajr)
-    write( ou_unit, '("sunrise:",2(i2,":"),i2,1x)' ) to_hms(waqt%sunrise)
-    write( ou_unit, '("dhuhur :",2(i2,":"),i2,1x)' ) to_hms(waqt%dhuhur)
-    write( ou_unit, '("asr    :",2(i2,":"),i2,1x)' ) to_hms(waqt%asr)
-    write( ou_unit, '("maghrib:",2(i2,":"),i2,1x)' ) to_hms(waqt%maghrib)
-    write( ou_unit, '("ishaa  :",2(i2,":"),i2,1x)' ) to_hms(waqt%ishaa)
+    print'(2(i2.2,"/"),i4," : ",6(2(i2.2,":"),i2.2,1x))', day%days, day%months, day%years, &
+      to_hms(waqt%fajr), to_hms(waqt%sunrise), to_hms(waqt%dhuhur), &
+      to_hms(waqt%asr), to_hms(waqt%maghrib), to_hms(waqt%ishaa)
+    write( ou_unit, '( 2(i2.2,"/"), i4, 1x, 6(2(i2.2,":"),i2.2,1x) )') &
+      day%days, day%months, day%years, &
+      to_hms(waqt%fajr), to_hms(waqt%sunrise), to_hms(waqt%dhuhur), &
+      to_hms(waqt%asr), to_hms(waqt%maghrib), to_hms(waqt%ishaa)
   end do
   !
   close( ou_unit )
