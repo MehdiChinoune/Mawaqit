@@ -1,7 +1,6 @@
 module times
   use kinds, only : wp
   use constants, only : pi, deg
-  use time_date, only : dat, julian_day
   implicit none
   !
   real(wp), parameter :: fajr_angle = 18._wp
@@ -43,17 +42,19 @@ contains
     !
   end subroutine prayer_times
 
-  ! Calculate zenith angle for relative sun's angle (to the horizon)
-  real(wp) function zenith(latitude,angle)
+  ! Calculate azimuth angle for relative sun's angle (to the horizon)
+  real(wp) function azimuth(latitude,angle)
     real(wp), intent(in) :: latitude, angle
     real(wp) :: alpha
     !
     alpha = asin( sin(dec)*sin(latitude)+cos(dec)*cos(latitude)*cos(angle) )
-    zenith = acos( (sin(dec)*cos(latitude)-cos(dec)*sin(latitude)*cos(angle)) /cos(alpha) )
+    azimuth = acos( (sin(dec)*cos(latitude)-cos(dec)*sin(latitude)*cos(angle)) &
+      /cos(alpha) ) - dec
     !
-  end function zenith
+  end function azimuth
 
-  ! Calculate the relative(Midday) time corresponding to relative sun's angle (to the horizon)
+  ! Calculate the time (relative to Midday) corresponding to sun's angle
+  ! (relative to the horizon)
   integer function time_angle(latitude,theta)
     real(wp), intent(in) :: latitude, theta
     time_angle = acos( ( -sin(theta)-sin(latitude)*sin(dec) ) &
@@ -62,6 +63,7 @@ contains
 
   ! Calculate the common variables : Equation of time, Declination, Midday
   subroutine init(time_zone,longitude,day)
+    use time_date, only : dat, julian_day
     integer, intent(in) :: time_zone
     real(wp), intent(in) :: longitude
     type(dat), intent(in) :: day

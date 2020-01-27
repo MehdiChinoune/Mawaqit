@@ -1,7 +1,7 @@
 program main
   use kinds, only : wp
   use constants, only : deg, month_days
-  use times, only : prayer_times, init, prayers
+  use times, only : prayer_times, init, prayers, azimuth
   use time_date, only : to_hms, dat
   implicit none
   !
