@@ -54,26 +54,7 @@ contains
           dir(2) = "W"
         end if
         !
-        if( abs(i)>=100 ) then
-          if( abs(j)>=10 ) then
-            write( filename, '("data/",A1,i2,A1,i3,".hgt")' ) dir(1), j, dir(2), i
-          else
-            write( filename, '("data/",A1,"0",i1,A1,i3,".hgt")' ) dir(1), j, dir(2), i
-          end if
-        elseif( abs(i)>=10 ) then
-          if( abs(j)>=10 ) then
-            write( filename, '("data/",A1,i2,A1,"0",i2,".hgt")' ) dir(1), j, dir(2), i
-          else
-            write( filename, '("data/",A1,"0",i1,A1,"0",i2,".hgt")' ) dir(1), j, dir(2), i
-          end if
-        else
-          if( abs(j)>=10 ) then
-            write( filename, '("data/",A1,i2,A1,"00",i1,".hgt")' ) dir(1), j, dir(2), i
-          else
-            write( filename, '("data/",A1,"0",i2,A1,"00",i1,".hgt")' ) dir(1), j, dir(2), i
-          endif
-        end if
-        !
+        write( filename, '("data/",A1,i2.2,A1,i3.3,".hgt")' ) dir(1), j, dir(2), i
         open( newunit = iu, file = filename, action = "read", status = "old", &
           form = "unformatted", access = "stream" )
         read( iu ) heights( (i-lon_min)*nx1:(i-lon_min+1)*nx1, &
