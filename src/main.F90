@@ -1,15 +1,18 @@
 program main
   use kinds, only : wp
   use constants, only : deg, month_days
-  use times, only : prayer_times, init, prayers, azimuth
+  use times, only : prayer_times, init, prayers
   use time_date, only : to_hms, dat
+  use geometry, only : surrounding
   implicit none
   !
   integer :: in_unit, ou_unit
   integer :: time_zone
   real(wp) :: longitude, latitude
   type(dat) :: day_start, day_stop
+  !
   integer :: i, i_f, month, year
+  real(wp), allocatable :: h(:)
   type(dat) :: day
   type(prayers) :: waqt
   !
@@ -29,6 +32,9 @@ program main
   print*, "day       : fajr     sunrise  dhuhur   asr      maghrib  ishaa"
   write( ou_unit, '(A61)' ) "Day        Fajr     Sunrise  Dhuhur   Asr      Maghrib  Ishaa"
   !
+  allocate( h(3600) )
+  call surrounding( longitude, latitude, h )
+  !
   i = day_start%days
   month = day_start%months
   year = day_start%years
@@ -37,7 +43,7 @@ program main
     if( month==2 .and. mod(year,4)/=0 .and. i==29 ) cycle
     day = dat(i,month,year)
     call init(time_zone, longitude, day)
-    call prayer_times(latitude,waqt)
+    call prayer_times(latitude,waqt,h)
     print'(2(i2.2,"/"),i4," : ",6(2(i2.2,":"),i2.2,1x))', day%days, day%months, day%years, &
       to_hms(waqt%fajr), to_hms(waqt%sunrise), to_hms(waqt%dhuhur), &
       to_hms(waqt%asr), to_hms(waqt%maghrib), to_hms(waqt%ishaa)

@@ -18,11 +18,12 @@ module times
 
 contains
 
-  subroutine prayer_times(latitude,times)
-    real(wp), intent(in) :: latitude
+  subroutine prayer_times(latitude,times,h)
+    real(wp), intent(in) :: latitude, h(:)
     type(prayers), intent(out) :: times
     !
-    real(wp) :: theta
+    real(wp) :: theta, hra
+    integer :: i, j
     !
     ! Check if the common variables was calculated
     if( .not. initiated ) error stop "You should call init(...) before"
@@ -33,8 +34,22 @@ contains
     times%asr = mid_day + time_angle(latitude,-theta)
     ! Maghrib (Sunset)
     times%maghrib = mid_day + time_angle(latitude,1.465*deg)
+    hra = 15*(times%maghrib-mid_day)/3600._wp
+    do i = 0, 60
+      hra = hra - i*0.05_wp
+      j = int( (pi-azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
+      if( h(j)<=elevation(latitude,hra*deg) ) exit
+    end do
+    times%maghrib = mid_day + time_angle( latitude, 0.45*deg-h(j) )
     ! Sunrise
     times%sunrise = mid_day - time_angle(latitude,0.77*deg)
+    hra = 15*(times%sunrise-mid_day)/3600._wp
+    do i = 0, 60
+      hra = hra + i*0.05_wp
+      j = int( (pi+azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
+      if( h(j)<=elevation(latitude,hra*deg) ) exit
+    end do
+    times%sunrise = mid_day - time_angle( latitude, 0.45*deg-h(j) )
     ! Fajr
     times%fajr = mid_day - time_angle(latitude,18.*deg)
     ! Ishaa
@@ -45,7 +60,6 @@ contains
   ! Calculate the Elevation angle for the sun
   real(wp) function elevation(latitude,angle)
     real(wp), intent(in) :: latitude, angle
-    real(wp) :: alpha
     !
     elevation = asin( sin(dec)*sin(latitude)+cos(dec)*cos(latitude)*cos(angle) )
     !
@@ -54,7 +68,6 @@ contains
   ! Calculate the azimuth angle for the sun
   real(wp) function azimuth(latitude,angle)
     real(wp), intent(in) :: latitude, angle
-    real(wp) :: alpha
     !
     azimuth = acos( (sin(dec)*cos(latitude)-cos(dec)*sin(latitude)*cos(angle)) &
       /cos( elevation(latitude,angle) ) )
