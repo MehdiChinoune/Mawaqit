@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.13)
 
 project(PrayerTimes Fortran)
 
-set( slatec_MAJOR_VERSION 0 )
-set( slatec_MINOR_VERSION 1 )
-set( slatec_VERSION  ${slatec_MAJOR_VERSION}.${slatec_MINOR_VERSION} )
+set( PrayerTimes_MAJOR_VERSION 0 )
+set( PrayerTimes_MINOR_VERSION 1 )
+set( PrayerTimes_VERSION  ${PrayerTimes_MAJOR_VERSION}.${PrayerTimes_MINOR_VERSION} )
 
 set ( CMAKE_CONFIGURATION_TYPES "Debug" "Release" "CodeCoverage" "Fast" )
 
