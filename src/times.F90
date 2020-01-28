@@ -42,14 +42,14 @@ contains
     !
   end subroutine prayer_times
 
-  ! Calculate azimuth angle for relative sun's angle (to the horizon)
+  ! Calculate the azimuth angle for the sun
   real(wp) function azimuth(latitude,angle)
     real(wp), intent(in) :: latitude, angle
     real(wp) :: alpha
     !
     alpha = asin( sin(dec)*sin(latitude)+cos(dec)*cos(latitude)*cos(angle) )
     azimuth = acos( (sin(dec)*cos(latitude)-cos(dec)*sin(latitude)*cos(angle)) &
-      /cos(alpha) ) - dec
+      /cos(alpha) )
     !
   end function azimuth
 
