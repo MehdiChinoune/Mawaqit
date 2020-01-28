@@ -15,6 +15,11 @@ if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "No CMAKE_BUILD_TYPE selected, default to ${CMAKE_BUILD_TYPE}")
 endif()
 
+option( OpenMP "Enable OpenMP" OFF )
+if( OpenMP )
+  find_package( OpenMP REQUIRED )
+endif()
+
 if ( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU" )
 
   set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall -Wimplicit-procedure -Wunused-parameter -std=f2018" )
