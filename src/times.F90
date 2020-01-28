@@ -42,14 +42,22 @@ contains
     !
   end subroutine prayer_times
 
+  ! Calculate the Elevation angle for the sun
+  real(wp) function elevation(latitude,angle)
+    real(wp), intent(in) :: latitude, angle
+    real(wp) :: alpha
+    !
+    elevation = asin( sin(dec)*sin(latitude)+cos(dec)*cos(latitude)*cos(angle) )
+    !
+  end function elevation
+
   ! Calculate the azimuth angle for the sun
   real(wp) function azimuth(latitude,angle)
     real(wp), intent(in) :: latitude, angle
     real(wp) :: alpha
     !
-    alpha = asin( sin(dec)*sin(latitude)+cos(dec)*cos(latitude)*cos(angle) )
     azimuth = acos( (sin(dec)*cos(latitude)-cos(dec)*sin(latitude)*cos(angle)) &
-      /cos(alpha) )
+      /cos( elevation(latitude,angle) ) )
     !
   end function azimuth
 
@@ -80,7 +88,7 @@ contains
     !
     dec = asin( sin(eps)*sin(lambda) )
     eq_time = ( (l-alpha)/deg - 180*nint((l-alpha)/deg/180) )*240
-    mid_day = 12*3600 + ( time_zone*15 - longitude )*240 - eq_time
+    mid_day = 12*3600 + ( time_zone*15 - longitude/deg )*240 - eq_time
     initiated = .true.
     !
   end subroutine init

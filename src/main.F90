@@ -20,6 +20,7 @@ program main
   read( in_unit, * ) latitude
   read( in_unit, * ) day_start
   read( in_unit, * ) day_stop
+  longitude = longitude*deg
   latitude = latitude*deg
   !
   close( in_unit )
