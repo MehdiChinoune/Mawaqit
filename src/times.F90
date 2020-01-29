@@ -5,7 +5,7 @@ module times
   !
   real(wp), parameter :: fajr_angle = 18._wp
   real(wp), parameter :: ishaa_angle = 17.1_wp
-  real(wp), parameter :: sunrise_angle = 17.1_wp
+  real(wp), parameter :: sunrise_angle = 0.833_wp
   !
   real(wp), protected :: dec      ! Sun's Declination
   integer, protected :: mid_day   ! Midday time
@@ -38,22 +38,22 @@ contains
     do i = 0, 60
       hra = hra - i*0.05_wp
       j = int( (pi-azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
-      if( h(j)<=elevation(latitude,hra*deg) ) exit
+      if( h(j)-0.5*deg<=elevation(latitude,hra*deg) ) exit
     end do
-    times%maghrib = mid_day + time_angle( latitude, 0.45*deg-h(j) )
+    times%maghrib = mid_day + time_angle( latitude, 0.5*deg-h(j) )
     ! Sunrise
     times%sunrise = mid_day - time_angle(latitude,0.77*deg)
     hra = 15*(times%sunrise-mid_day)/3600._wp
     do i = 0, 60
       hra = hra + i*0.05_wp
       j = int( (pi+azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
-      if( h(j)<=elevation(latitude,hra*deg) ) exit
+      if( h(j)-0.5*deg<=elevation(latitude,hra*deg) ) exit
     end do
-    times%sunrise = mid_day - time_angle( latitude, 0.45*deg-h(j) )
+    times%sunrise = mid_day - time_angle( latitude, 0.5*deg-h(j) )
     ! Fajr
-    times%fajr = mid_day - time_angle(latitude,18.*deg)
+    times%fajr = mid_day - time_angle(latitude,fajr_angle)
     ! Ishaa
-    times%ishaa = mid_day + time_angle(latitude,17.1*deg)
+    times%ishaa = mid_day + time_angle(latitude,ishaa_angle)
     !
   end subroutine prayer_times
 
