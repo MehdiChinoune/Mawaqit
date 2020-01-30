@@ -21,6 +21,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: Preparing Data
+      run: |
+        wget https://github.com/ChinouneMehdi/PrayerTimes/releases/download/data/data.zip
+        unzip data.zip
+        rm data.zip
     - name: Configuring
       run: |
         mkdir build

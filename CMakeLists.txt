@@ -53,3 +53,4 @@ endif ()
 add_subdirectory(src)
 
 file(COPY data.dat DESTINATION ./ )
+file(COPY data DESTINATION ./ )
