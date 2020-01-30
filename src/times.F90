@@ -3,9 +3,10 @@ module times
   use constants, only : pi, deg
   implicit none
   !
-  real(wp), parameter :: fajr_angle = 18._wp
-  real(wp), parameter :: ishaa_angle = 17.1_wp
-  real(wp), parameter :: sunrise_angle = 0.833_wp
+  real(wp), parameter :: fajr_angle = 18._wp*deg
+  real(wp), parameter :: ishaa_angle = 17.1_wp*deg
+  real(wp), parameter :: sunrise_angle = 0.833_wp*deg
+  real(wp), parameter :: sunset_angle = 0.833_wp*deg
   !
   real(wp), protected :: dec      ! Sun's Declination
   integer, protected :: mid_day   ! Midday time
@@ -33,7 +34,7 @@ contains
     theta = atan( 1._wp/( 1._wp + tan(latitude-dec) ) )
     times%asr = mid_day + time_angle(latitude,-theta)
     ! Maghrib (Sunset)
-    times%maghrib = mid_day + time_angle(latitude,1.465*deg)
+    times%maghrib = mid_day + time_angle(latitude,sunset_angle)
     hra = 15*(times%maghrib-mid_day)/3600._wp
     do i = 0, 60
       hra = hra - i*0.05_wp
@@ -42,7 +43,7 @@ contains
     end do
     times%maghrib = mid_day + time_angle( latitude, 0.5*deg-h(j) )
     ! Sunrise
-    times%sunrise = mid_day - time_angle(latitude,0.77*deg)
+    times%sunrise = mid_day - time_angle(latitude,sunrise_angle)
     hra = 15*(times%sunrise-mid_day)/3600._wp
     do i = 0, 60
       hra = hra + i*0.05_wp
