@@ -7,6 +7,7 @@ contains
   subroutine surrounding( longitude, latitude, h )
     use constants, only : pi, deg, earth_radius_equator, &
       circ => earth_circumference_equator
+    use iso_fortran_env, only : int16
     implicit none
     real(wp), intent(in) :: longitude, latitude
     real(wp), intent(out) :: h(:)
@@ -15,14 +16,14 @@ contains
     real(wp), parameter :: d_max = 80000._wp
     integer, parameter :: nx1 = 3600, ny1 = 3600
     !
-    integer(2), allocatable :: heights(:,:)
+    integer(int16), allocatable :: heights(:,:)
     integer :: iu, lon_min, lon_max, lat_min, lat_max, nx, ny
     character :: dir(2) ! direction( north or south, east or west )
     character(16) :: filename
     !
     integer :: i0, j0, i, j, i1, j1, k, imax, jmax, kmax
     real(wp) :: d_lon, theta, d_lat1, d_lon1, d, lat_deg, long_deg
-    real(wp) :: hmax, phi, h1, radius, arc
+    real(wp) :: hmax, phi, h0, h1, radius, arc
     ! longitude and latitude in degrees
     long_deg = longitude/deg
     lat_deg = latitude/deg
@@ -65,6 +66,7 @@ contains
     !
     i0 = int( modulo( long_deg, 1._wp ) * nx1 ) + (int(long_deg)-lon_min)*nx1
     j0 = int( (1._wp - modulo( lat_deg, 1._wp ) ) * ny1 ) + (lat_max-int(lat_deg))*ny1
+    h0 = heights(i0,j0) + 2
     !
     imax = int( d_max/d_lon1 )
     jmax = int( d_max/d_lat1 )
@@ -112,9 +114,9 @@ contains
         !
         arc = hypot( (i1-i0)*d_lon1, (j1-j0)*d_lat1 )
         phi = arc/radius
-        h1 = radius* ( 1._wp - 1._wp/cos(phi) )
+        h1 = (radius+h0)* ( 1._wp - 1._wp/cos(phi) )
         !
-        h(i) = max( h(i), atan2( heights(i1, j1)-heights(i0,j0)-2-h1, arc ) )
+        h(i) = max( h(i), atan2( heights(i1, j1)-h0-h1, arc ) )
       end do
     end do
     !

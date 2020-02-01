@@ -20,7 +20,7 @@ if( OpenMP )
   find_package( OpenMP REQUIRED )
 endif()
 
-if ( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU" )
+if( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU" )
 
   set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall -Wimplicit-procedure -Wunused-parameter -std=f2018" )
   set( CMAKE_Fortran_FLAGS_FAST "-Ofast -flto" )
@@ -28,7 +28,7 @@ if ( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU" )
   set( CMAKE_Fortran_FLAGS_DEBUG "-O0 -g -fcheck=all -ffpe-trap=zero,overflow,invalid -fbacktrace" )
   set ( CMAKE_Fortran_FLAGS_CODECOVERAGE "--coverage -g -O0" )
 
-elseif ( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel" )
+elseif( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel" )
 
   set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all -stand f18 -standard-semantics -assume nostd_mod_proc_name" )
   set( CMAKE_Fortran_FLAGS_FAST "-Ofast -ipo" )
@@ -36,19 +36,19 @@ elseif ( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel" )
   set( CMAKE_Fortran_FLAGS_DEBUG "-O0 -g -check all -fpe-all=0 -traceback" )
   set ( CMAKE_Fortran_FLAGS_CODECOVERAGE "-prof-gen:srcpos -prof-dir=${CMAKE_BINARY_DIR}/prof/ -g -O0" )
 
-elseif ( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "Flang" )
+elseif( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "Flang" )
 
   set( CMAKE_Fortran_FLAGS_FAST "${CMAKE_Fortran_FLAGS} -Ofast" )
   set( CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS} -O3" )
   set( CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS} -O0 -g -Wall" )
 
-elseif ( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "PGI" )
+elseif( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "PGI" )
 
   set( CMAKE_Fortran_FLAGS_FAST "${CMAKE_Fortran_FLAGS} -Mallocatable=03 -fast" )
   set( CMAKE_Fortran_FLAGS_RELEASE "${CMAKE_Fortran_FLAGS} -Mallocatable=03 -O3" )
   set( CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS} -Minform=inform -Mallocatable=03 -Mstandard -O0 -g -C" )
 
-endif ()
+endif()
 
 add_subdirectory(src)
 
