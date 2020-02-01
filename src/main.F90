@@ -43,6 +43,10 @@ program main
     if( month==2 .and. mod(year,4)/=0 .and. i==29 ) cycle
     day = dat(i,month,year)
     call init(time_zone, longitude, day)
+    call prayer_times(latitude,waqt,h,.true.)
+    print'(2(i2.2,"/"),i4," : ",6(2(i2.2,":"),i2.2,1x))', day%days, day%months, day%years, &
+      to_hms(waqt%fajr), to_hms(waqt%sunrise), to_hms(waqt%dhuhur), &
+      to_hms(waqt%asr), to_hms(waqt%maghrib), to_hms(waqt%ishaa)
     call prayer_times(latitude,waqt,h)
     print'(2(i2.2,"/"),i4," : ",6(2(i2.2,":"),i2.2,1x))', day%days, day%months, day%years, &
       to_hms(waqt%fajr), to_hms(waqt%sunrise), to_hms(waqt%dhuhur), &

@@ -19,9 +19,10 @@ module times
 
 contains
 
-  subroutine prayer_times(latitude,times,h)
+  subroutine prayer_times(latitude,times,h,relief)
     real(wp), intent(in) :: latitude, h(:)
     type(prayers), intent(out) :: times
+    logical, intent(in), optional :: relief
     !
     real(wp) :: theta, hra
     integer :: i, j
@@ -35,22 +36,30 @@ contains
     times%asr = mid_day + time_angle(latitude,-theta)
     ! Maghrib (Sunset)
     times%maghrib = mid_day + time_angle(latitude,sunset_angle)
-    hra = 15*(times%maghrib-mid_day)/3600._wp
-    do i = 0, 60
-      hra = hra - i*0.05_wp
-      j = int( (pi-azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
-      if( h(j)-0.5*deg<=elevation(latitude,hra*deg) ) exit
-    end do
-    times%maghrib = mid_day + time_angle( latitude, 0.5*deg-h(j) )
+    if( present(relief) ) then
+      if( relief .eqv. .true. ) then
+        hra = 15*(times%maghrib-mid_day)/3600._wp
+        do i = 0, 60
+          hra = hra - i*0.05_wp
+          j = int( (pi-azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
+          if( h(j)-0.6*deg<=elevation(latitude,hra*deg) ) exit
+        end do
+        times%maghrib = mid_day + time_angle( latitude, 0.6*deg-h(j) )
+      end if
+    end if
     ! Sunrise
     times%sunrise = mid_day - time_angle(latitude,sunrise_angle)
-    hra = 15*(times%sunrise-mid_day)/3600._wp
-    do i = 0, 60
-      hra = hra + i*0.05_wp
-      j = int( (pi+azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
-      if( h(j)-0.5*deg<=elevation(latitude,hra*deg) ) exit
-    end do
-    times%sunrise = mid_day - time_angle( latitude, 0.5*deg-h(j) )
+    if( present(relief) ) then
+      if( relief .eqv. .true. ) then
+        hra = 15*(times%sunrise-mid_day)/3600._wp
+        do i = 0, 60
+          hra = hra + i*0.05_wp
+          j = int( (pi+azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
+          if( h(j)-0.6*deg<=elevation(latitude,hra*deg) ) exit
+        end do
+        times%sunrise = mid_day - time_angle( latitude, 0.6*deg-h(j) )
+      end if
+    end if
     ! Fajr
     times%fajr = mid_day - time_angle(latitude,fajr_angle)
     ! Ishaa
