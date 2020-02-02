@@ -24,14 +24,14 @@ jobs:
     - uses: actions/checkout@v1
     - name: Preparing Data
       run: |
-        wget https://github.com/ChinouneMehdi/PrayerTimes/releases/download/data/data.zip
-        unzip data.zip
-        rm data.zip
+        wget https://github.com/ChinouneMehdi/PrayerTimes/releases/download/data/data.tar.xz
+        tar -xvf data.tar.xz
+        rm data.tar.xz
     - name: Configuring
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DHDF5_ROOT=/usr/local/HDF_Group/HDF5/1.10.6
     - name: Building
       run: make -C build -j$(nproc)
     - name: Running

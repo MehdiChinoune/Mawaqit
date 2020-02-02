@@ -5,9 +5,11 @@ module geometry
 contains
   !
   subroutine surrounding( longitude, latitude, h )
+    use iso_fortran_env, only : int16
     use constants, only : pi, deg, earth_radius_equator, &
       circ => earth_circumference_equator
-    use iso_fortran_env, only : int16
+    use hdf5, only : h5open_f, h5close_f, h5fopen_f, h5fclose_f, h5dopen_f, &
+      h5dclose_f, h5dread_f, H5F_ACC_RDONLY_F, H5T_STD_I16LE, HID_T, HSIZE_T
     implicit none
     real(wp), intent(in) :: longitude, latitude
     real(wp), intent(out) :: h(:)
@@ -17,9 +19,14 @@ contains
     integer, parameter :: nx1 = 3600, ny1 = 3600
     !
     integer(int16), allocatable :: heights(:,:)
-    integer :: iu, lon_min, lon_max, lat_min, lat_max, nx, ny
+    integer :: lon_min, lon_max, lat_min, lat_max, nx, ny
     character :: dir(2) ! direction( north or south, east or west )
     character(16) :: filename
+    !
+    integer(HID_T) :: file_id, dset_id
+    integer(HSIZE_T), allocatable :: dset_dim(:)
+    character(:), allocatable :: dset_name
+    integer :: error
     !
     integer :: i0, j0, i, j, i1, j1, k, imax, jmax, kmax
     real(wp) :: d_lon, theta, d_lat1, d_lon1, d, lat_deg, long_deg
@@ -40,6 +47,8 @@ contains
     allocate( heights(0:(lon_max-lon_min+1)*nx1, 0:(lat_max-lat_min+1)*ny1 ) )
     nx = size( heights, 1 ) - 1
     ny = size( heights, 2 ) - 1
+    dset_dim = [ nx1, ny1 ]
+    dset_name = "Elevation"
     do i = lon_min, lon_max
       do j = lat_max, lat_min, -1
         ! North or South
@@ -55,17 +64,30 @@ contains
           dir(2) = "W"
         end if
         !
-        write( filename, '("data/",A1,i2.2,A1,i3.3,".hgt")' ) dir(1), j, dir(2), i
-        open( newunit = iu, file = filename, action = "read", status = "old", &
-          form = "unformatted", access = "stream" )
-        read( iu ) heights( (i-lon_min)*nx1:(i-lon_min+1)*nx1, &
-          (lat_max-j)*ny1:(lat_max-j+1)*ny1 )
-        close( iu )
+
+        write( filename, '("data/",A1,i2.2,A1,i3.3,".h5")' ) dir(1), j, dir(2), i
+        ! Initialize Fortran Interface
+        call h5open_f(error)
+        ! Open File
+        call h5fopen_f(filename, H5F_ACC_RDONLY_F, file_id, error)
+        ! Open Dataset
+        call h5dopen_f(file_id, dset_name, dset_id, error )
+
+        ! Read Data
+        call h5dread_f(dset_id, H5T_STD_I16LE, heights( (i-lon_min)*nx1:(i-lon_min+1)*nx1, &
+          (j-lat_min)*ny1:(j-lat_min+1)*ny1 ), dset_dim, error)
+
+        ! Close Dataset
+        call h5dclose_f(dset_id, error)
+        ! Close File
+        call h5fclose_f(file_id, error)
+        ! Close Fortran Interface
+        call h5close_f(error)
       end do
     end do
     !
     i0 = int( modulo( long_deg, 1._wp ) * nx1 ) + (int(long_deg)-lon_min)*nx1
-    j0 = int( (1._wp - modulo( lat_deg, 1._wp ) ) * ny1 ) + (lat_max-int(lat_deg))*ny1
+    j0 = int( modulo( lat_deg, 1._wp ) * ny1 ) + (int(lat_deg)-lat_min)*ny1
     h0 = heights(i0,j0) + 2
     !
     imax = int( d_max/d_lon1 )
@@ -75,7 +97,7 @@ contains
     !
     !$omp parallel do private(theta, hmax, kmax, d, radius, k, i1, j1, arc, phi, h1)
     do i = 1, size(h)
-      theta = i * 2._wp*pi/size(h)
+      theta = -i * 2._wp*pi/size(h)
       hmax = 0._wp
       kmax = hypot( jmax*cos(theta), imax*sin(theta) )
       d = d_max/kmax

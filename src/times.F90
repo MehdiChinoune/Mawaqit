@@ -41,7 +41,7 @@ contains
         hra = 15*(times%maghrib-mid_day)/3600._wp
         do i = 0, 60
           hra = hra - i*0.05_wp
-          j = int( (pi-azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
+          j = int( (2._wp*pi-azimuth(latitude,hra*deg))/(2._wp*pi) * size(h) )
           if( h(j)-0.6*deg<=elevation(latitude,hra*deg) ) exit
         end do
         times%maghrib = mid_day + time_angle( latitude, 0.6*deg-h(j) )
@@ -54,7 +54,7 @@ contains
         hra = 15*(times%sunrise-mid_day)/3600._wp
         do i = 0, 60
           hra = hra + i*0.05_wp
-          j = int( (pi+azimuth(latitude,hra*deg))/(2._wp*pi)*size(h) )
+          j = int( azimuth(latitude,hra*deg)/(2._wp*pi) * size(h) )
           if( h(j)-0.6*deg<=elevation(latitude,hra*deg) ) exit
         end do
         times%sunrise = mid_day - time_angle( latitude, 0.6*deg-h(j) )
