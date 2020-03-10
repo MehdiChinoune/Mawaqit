@@ -1,3 +1,5 @@
+![Github actions](https://github.com/ChinouneMehdi/PrayerTimes/workflows/Github%20actions/badge.svg)
+
 # مواقيت الصلاة
 
 برنامج لحساب مواقيت الصلاة مع أخذ التضاريس بعين الإعتبار
