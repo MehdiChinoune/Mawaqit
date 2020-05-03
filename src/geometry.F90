@@ -64,6 +64,11 @@ contains
           dir(2) = "W"
         end if
         !
+        if( all(dir==["N","E"]) .and. j==37 .and. i>=0 .and. i<=5 ) then
+          heights( (i-lon_min)*nx1:(i-lon_min+1)*nx1, (j-lat_min)*ny1:(j-lat_min+1)*ny1 ) &
+            = 0_int16
+          cycle
+        end if
 
         write( filename, '("data/",A1,i2.2,A1,i3.3,".h5")' ) dir(1), j, dir(2), i
         ! Initialize Fortran Interface
