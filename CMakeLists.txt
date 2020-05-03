@@ -53,4 +53,8 @@ endif()
 add_subdirectory(src)
 
 file(COPY data.dat DESTINATION ./ )
-file(COPY data DESTINATION ./ )
+
+option( LOCAL_DATA "Use Local DATA" OFF )
+if( LOCAL_DATA )
+  file(COPY data DESTINATION ./ )
+endif()

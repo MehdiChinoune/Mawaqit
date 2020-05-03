@@ -21,7 +21,9 @@ contains
     integer(int16), allocatable :: heights(:,:)
     integer :: lon_min, lon_max, lat_min, lat_max, nx, ny
     character :: dir(2) ! direction( north or south, east or west )
-    character(16) :: filename
+    character(21) :: filename
+    logical :: file_found
+    integer :: down_stat
     !
     integer(HID_T) :: file_id, dset_id
     integer(HSIZE_T), allocatable :: dset_dim(:)
@@ -48,7 +50,7 @@ contains
     nx = size( heights, 1 ) - 1
     ny = size( heights, 2 ) - 1
     dset_dim = [ nx1, ny1 ]
-    dset_name = "Elevation"
+    dset_name = "SRTMGL1_DEM"
     do i = lon_min, lon_max
       do j = lat_max, lat_min, -1
         ! North or South
@@ -70,11 +72,18 @@ contains
           cycle
         end if
 
-        write( filename, '("data/",A1,i2.2,A1,i3.3,".h5")' ) dir(1), j, dir(2), i
+        write( filename, '(A1,i2.2,A1,i3.3,".SRTMGL1_NC.nc")' ) dir(1), abs(j), dir(2), abs(i)
+        inquire( file = "data/"//filename, exist = file_found )
+        if( .not. file_found ) then
+          call execute_command_line( &
+          "wget https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1_NC.003/2000.02.11/"//filename&
+          &//" -P ./data -nv", cmdstat=down_stat )
+          if( down_stat>=0 ) cycle
+        end if
         ! Initialize Fortran Interface
         call h5open_f(error)
         ! Open File
-        call h5fopen_f(filename, H5F_ACC_RDONLY_F, file_id, error)
+        call h5fopen_f("data/"//filename, H5F_ACC_RDONLY_F, file_id, error)
         ! Open Dataset
         call h5dopen_f(file_id, dset_name, dset_id, error )
 

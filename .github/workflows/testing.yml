@@ -21,12 +21,15 @@ jobs:
     container: chinoune/debian-gfortran-testing:${{ matrix.image_tag }}
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Preparing Data
+      env:
+        USERNAME: ${{ secrets.LPDAAC_USERNAME }}
+        PASSWORD: ${{ secrets.LPDAAC_PASSWORD }}
       run: |
-        wget https://github.com/ChinouneMehdi/PrayerTimes/releases/download/data/data.tar.xz
-        tar -xvf data.tar.xz
-        rm data.tar.xz
+        echo machine urs.earthdata.nasa.gov >> ~/.netrc
+        echo http-user="$USERNAME" >> ~/.wgetrc
+        echo http-password="$PASSWORD" >> ~/.wgetrc
     - name: Configuring
       run: |
         mkdir build
