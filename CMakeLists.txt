@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(PrayerTimes Fortran)
+project(Mawaqit Fortran)
 
 set( PrayerTimes_MAJOR_VERSION 0 )
 set( PrayerTimes_MINOR_VERSION 1 )
