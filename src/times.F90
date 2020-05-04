@@ -3,10 +3,10 @@ module times
   use constants, only : pi, deg
   implicit none
   !
-  real(wp), parameter :: fajr_angle = 18._wp*deg
-  real(wp), parameter :: ishaa_angle = 17.1_wp*deg
-  real(wp), parameter :: sunrise_angle = 0.833_wp*deg
-  real(wp), parameter :: sunset_angle = 0.833_wp*deg
+  real(wp), parameter :: fajr_angle = 17.833_wp*deg
+  real(wp), parameter :: ishaa_angle = 17.14_wp*deg
+  real(wp), parameter :: sunrise_angle = 0.68_wp*deg
+  real(wp), parameter :: sunset_angle = 1.53_wp*deg
   !
   real(wp), protected :: dec      ! Sun's Declination
   integer, protected :: mid_day   ! Midday time
