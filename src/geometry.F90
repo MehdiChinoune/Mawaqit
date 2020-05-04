@@ -47,12 +47,14 @@ contains
     lat_max = int( lat_deg + d_max/d_lat )
     !
     allocate( heights(0:(lon_max-lon_min+1)*nx1, 0:(lat_max-lat_min+1)*ny1 ) )
+    heights = 0_int16
     nx = size( heights, 1 ) - 1
     ny = size( heights, 2 ) - 1
     dset_dim = [ nx1, ny1 ]
     dset_name = "SRTMGL1_DEM"
     do i = lon_min, lon_max
       do j = lat_max, lat_min, -1
+        if( j==37 .and. i>=0 .and. i<=5 ) cycle
         ! North or South
         if( j>=0 ) then
           dir(1) = "N"
@@ -66,24 +68,22 @@ contains
           dir(2) = "W"
         end if
         !
-        if( all(dir==["N","E"]) .and. j==37 .and. i>=0 .and. i<=5 ) then
-          heights( (i-lon_min)*nx1:(i-lon_min+1)*nx1, (j-lat_min)*ny1:(j-lat_min+1)*ny1 ) &
-            = 0_int16
-          cycle
-        end if
-
-        write( filename, '(A1,i2.2,A1,i3.3,".SRTMGL1_NC.nc")' ) dir(1), abs(j), dir(2), abs(i)
+        write( filename, '(A1,i2.2,A1,i3.3,".SRTMGL1_NC.nc")' ) dir(1), abs(j), &
+          dir(2), abs(i)
         inquire( file = "data/"//filename, exist = file_found )
         if( .not. file_found ) then
           call execute_command_line( &
           "wget https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1_NC.003/2000.02.11/"//filename&
           &//" -P ./data -nv", cmdstat=down_stat )
-          if( down_stat>=0 ) cycle
         end if
         ! Initialize Fortran Interface
         call h5open_f(error)
         ! Open File
         call h5fopen_f("data/"//filename, H5F_ACC_RDONLY_F, file_id, error)
+        if( error/=0 ) then
+          print*, "Failed to open "//filename
+          cycle
+        end if
         ! Open Dataset
         call h5dopen_f(file_id, dset_name, dset_id, error )
 
@@ -154,6 +154,7 @@ contains
         !
         h(i) = max( h(i), atan2( heights(i1, j1)-h0-h1, arc ) )
       end do
+      !
     end do
     !
   end subroutine surrounding
