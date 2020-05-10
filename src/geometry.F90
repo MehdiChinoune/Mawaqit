@@ -7,7 +7,7 @@ contains
   subroutine surrounding( longitude, latitude, h )
     use iso_fortran_env, only : int16
     use constants, only : pi, deg, earth_radius_equator, &
-      circ => earth_circumference_equator
+      circumference => earth_circumference_equator
     use hdf5, only : h5open_f, h5close_f, h5fopen_f, h5fclose_f, h5dopen_f, &
       h5dclose_f, h5dread_f, h5f_acc_rdonly_f, h5t_std_i16le, hid_t, hsize_t
     implicit none
@@ -88,8 +88,10 @@ contains
         call h5dopen_f(file_id, dset_name, dset_id, error )
 
         ! Read Data
-        call h5dread_f(dset_id, H5T_STD_I16LE, heights( (i-lon_min)*nx1:(i-lon_min+1)*nx1, &
+        call h5dread_f(dset_id, h5t_std_i16le, heights( (i-lon_min)*nx1:(i-lon_min+1)*nx1, &
           (j-lat_min)*ny1:(j-lat_min+1)*ny1 ), dset_dim, error)
+        heights( (i-lon_min)*nx1:(i-lon_min+1)*nx1, (j-lat_min)*ny1:(j-lat_min+1)*ny1 ) = &
+          heights( (i-lon_min)*nx1:(i-lon_min+1)*nx1, (j-lat_min+1)*ny1:(j-lat_min)*ny1:-1 )
 
         ! Close Dataset
         call h5dclose_f(dset_id, error)
@@ -125,8 +127,8 @@ contains
           sin(longitude)*cos(latitude), sin(latitude) ]
         b = [ -a(1), -a(2), a(3) ]
         !
-        tmp1 = d_max*cos(theta)/circ *2._wp*pi
-        tmp2 = d_max*sin(theta)/circ *2._wp*pi
+        tmp1 = d_max*cos(theta)/circumference *2._wp*pi
+        tmp2 = d_max*sin(theta)/circumference *2._wp*pi
         c = earth_radius_equator * [ cos(longitude+tmp2)*cos(latitude+tmp1), &
           sin(longitude+tmp2)*cos(latitude+tmp1), sin(latitude+tmp1) ]
         !
