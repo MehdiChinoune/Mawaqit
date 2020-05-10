@@ -39,7 +39,12 @@ program main
   i = day_start%days
   month = day_start%months
   year = day_start%years
-  i_f = month_days(month)
+  if( month==day_stop%months ) then
+    i_f = day_stop%days
+  else
+    i_f = month_days(month)
+  end if
+  !
   do while(i<=i_f)
     if( month==2 .and. mod(year,4)/=0 .and. i==29 ) cycle
     day = dat(i,month,year)
