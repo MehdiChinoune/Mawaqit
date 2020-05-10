@@ -9,7 +9,7 @@ contains
     use constants, only : pi, deg, earth_radius_equator, &
       circ => earth_circumference_equator
     use hdf5, only : h5open_f, h5close_f, h5fopen_f, h5fclose_f, h5dopen_f, &
-      h5dclose_f, h5dread_f, H5F_ACC_RDONLY_F, H5T_STD_I16LE, HID_T, HSIZE_T
+      h5dclose_f, h5dread_f, h5f_acc_rdonly_f, h5t_std_i16le, hid_t, hsize_t
     implicit none
     real(wp), intent(in) :: longitude, latitude
     real(wp), intent(out) :: h(:)
@@ -25,14 +25,14 @@ contains
     logical :: file_found
     integer :: down_stat
     !
-    integer(HID_T) :: file_id, dset_id
-    integer(HSIZE_T), allocatable :: dset_dim(:)
+    integer(hid_t) :: file_id, dset_id
+    integer(hsize_t), allocatable :: dset_dim(:)
     character(:), allocatable :: dset_name
     integer :: error
     !
     integer :: i0, j0, i, j, i1, j1, k, imax, jmax, kmax
     real(wp) :: d_lon, theta, d_lat1, d_lon1, d, lat_deg, long_deg
-    real(wp) :: hmax, phi, h0, h1, radius, arc
+    real(wp) :: hmax, phi, h0, h1, h2, radius, arc
     ! longitude and latitude in degrees
     long_deg = longitude/deg
     lat_deg = latitude/deg
@@ -79,7 +79,7 @@ contains
         ! Initialize Fortran Interface
         call h5open_f(error)
         ! Open File
-        call h5fopen_f("data/"//filename, H5F_ACC_RDONLY_F, file_id, error)
+        call h5fopen_f("data/"//filename, h5f_acc_rdonly_f, file_id, error)
         if( error/=0 ) then
           print*, "Failed to open "//filename
           cycle
@@ -109,7 +109,7 @@ contains
     !
     h = 0._wp
     !
-    !$omp parallel do private(theta, hmax, kmax, d, radius, k, i1, j1, arc, phi, h1)
+    !$omp parallel do private(theta, hmax, kmax, d, radius, k, i1, j1, arc, phi, h1, h2)
     do i = 1, size(h)
       theta = -i * 2._wp*pi/size(h)
       hmax = 0._wp
@@ -150,9 +150,10 @@ contains
         !
         arc = hypot( (i1-i0)*d_lon1, (j1-j0)*d_lat1 )
         phi = arc/radius
-        h1 = (radius+h0)* ( 1._wp - 1._wp/cos(phi) )
+        h1 = (radius+h0)* ( 1._wp/cos(phi) - 1._wp )
+        h2 = heights(i1,j1) - ( h0 + h1 )
         !
-        h(i) = max( h(i), atan2( heights(i1, j1)-h0-h1, arc ) )
+        h(i) = max( h(i), atan2( h2, ( radius+heights(i1,j1) )* tan(phi) ) )
       end do
       !
     end do
