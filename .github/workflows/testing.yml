@@ -3,19 +3,19 @@ name: Github actions
 on:
   push:
   schedule:
-    - cron: '0 2 * * 1,4'
+    - cron: '0 2 * * 1'
 
 jobs:
   Build:
 
     name: build
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     strategy:
       fail-fast: false
       matrix:
-        image_tag: [old, stable, trunk]
+        image_tag: [old, stable]
         build_type: [Debug, Release]
 
     container: chinoune/debian-gfortran-testing:${{ matrix.image_tag }}
