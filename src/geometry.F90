@@ -122,7 +122,7 @@ contains
       call execute_command_line( &
         "wget https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1_NC.003/2000.02.11/"&
         &//filename//" -P ./data -nv", cmdstat=down_stat )
-      if( down_stat==0 ) then
+      if( down_stat>0 ) then
         print*, "Failed to download "//filename
         return
       end if
