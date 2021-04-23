@@ -18,7 +18,7 @@ jobs:
         image_tag: [old, stable]
         build_type: [Debug, Release]
 
-    container: chinoune/debian-gfortran-testing:${{ matrix.image_tag }}
+    container: ghcr.io/mehdichinoune/debian-gfortran-testing:${{ matrix.image_tag }}
 
     steps:
     - uses: actions/checkout@v2
