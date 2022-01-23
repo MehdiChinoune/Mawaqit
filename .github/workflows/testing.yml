@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_tag: [old, stable]
+        image_tag: [old, stable, trunk]
         build_type: [Debug, Release]
 
     container: ghcr.io/mehdichinoune/debian-gfortran-testing:${{ matrix.image_tag }}
@@ -34,8 +34,11 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DHDF5_ROOT=/usr/local/HDF_Group/HDF5/1.12.0
+        cmake .. \
+          -GNinja \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DHDF5_ROOT=/usr/local/HDF_Group/HDF5/1.13.0
     - name: Building
-      run: make -C build -j$(nproc)
+      run: ninja -C build
     - name: Running
       run: build/main
