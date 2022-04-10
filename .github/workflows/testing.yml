@@ -37,7 +37,7 @@ jobs:
         cmake .. \
           -GNinja \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -DHDF5_ROOT=/usr/local/HDF_Group/HDF5/1.13.0
+          -DHDF5_ROOT=/usr/local/HDF_Group/HDF5/1.13.1
     - name: Building
       run: ninja -C build
     - name: Running
