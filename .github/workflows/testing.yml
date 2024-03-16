@@ -21,7 +21,7 @@ jobs:
     container: ghcr.io/mehdichinoune/debian-gfortran-testing:${{ matrix.image_tag }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Preparing Data
       env:
         USERNAME: ${{ secrets.LPDAAC_USERNAME }}
@@ -32,12 +32,12 @@ jobs:
         echo http-password="$PASSWORD" >> ~/.wgetrc
     - name: Configuring
       run: |
-        mkdir build
-        cd build
-        cmake .. \
+        cmake \
           -GNinja \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -DHDF5_ROOT=/usr/local/HDF_Group/HDF5/1.14.1
+          -DHDF5_ROOT=/usr/local/hdf5 \
+          -B build \
+          -S .
     - name: Building
       run: ninja -C build
     - name: Running
