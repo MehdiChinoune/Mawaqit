@@ -5,6 +5,7 @@ set( srcs "main.F90" "kinds.F90" "constants.F90" "times.F90" "time_date.F90" "ge
 
 add_executable( main ${srcs} )
 
+enable_language(C)
 find_package( HDF5 REQUIRED COMPONENTS Fortran )
 target_link_libraries( main ${HDF5_LIBRARIES} )
 
