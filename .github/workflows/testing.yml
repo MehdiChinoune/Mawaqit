@@ -24,8 +24,8 @@ jobs:
     - uses: actions/checkout@v5
     - name: Preparing Data
       env:
-        USERNAME: ${{ secrets.LPDAAC_USERNAME }}
-        PASSWORD: ${{ secrets.LPDAAC_PASSWORD }}
+        USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
+        PASSWORD: ${{ secrets.EARTHDATA_PASSWORD }}
       run: |
         echo machine urs.earthdata.nasa.gov >> ~/.netrc
         echo http-user="$USERNAME" >> ~/.wgetrc
