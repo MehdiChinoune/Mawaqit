@@ -10,7 +10,7 @@ jobs:
 
     name: build
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
@@ -21,7 +21,7 @@ jobs:
     container: ghcr.io/mehdichinoune/debian-gfortran-testing:${{ matrix.image_tag }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Preparing Data
       env:
         USERNAME: ${{ secrets.LPDAAC_USERNAME }}
@@ -35,7 +35,7 @@ jobs:
         cmake \
           -GNinja \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -DHDF5_ROOT=/usr/local/hdf5 \
+          -DHDF5_ROOT=/usr/local \
           -B build \
           -S .
     - name: Building
