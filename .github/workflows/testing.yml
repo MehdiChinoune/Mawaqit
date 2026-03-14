@@ -21,7 +21,7 @@ jobs:
     container: ghcr.io/mehdichinoune/debian-gfortran-testing:${{ matrix.image_tag }}
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Preparing Data
       env:
         USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
