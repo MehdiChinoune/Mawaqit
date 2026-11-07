@@ -10,7 +10,7 @@ jobs:
 
     name: build
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
 
     strategy:
       fail-fast: false
@@ -21,7 +21,7 @@ jobs:
     container: ghcr.io/mehdichinoune/debian-gfortran-testing:${{ matrix.image_tag }}
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Preparing Data
       env:
         USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
